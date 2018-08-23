@@ -42,8 +42,9 @@ func getFromDatabase(s *mgo.Session) []Song {
 	session := s.Copy()
 	defer session.Close()
 	c := session.DB("test").C("songs")
-	result := []Song{}
-	err := c.Find(nil).Sort("-downloadnumber").All(&result)
+	var result []Song
+	ranking := c.Find(bson.M{}).Sort("-downloadnumber").Limit(3).Iter()
+	err := ranking.All(&result)
 	if err != nil {
 		panic(err)
 		return nil
