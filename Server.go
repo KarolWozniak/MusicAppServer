@@ -38,6 +38,19 @@ func saveInDatabase(s *mgo.Session, songName string) {
 	}
 }
 
+func getFromDatabase(s *mgo.Session) []Song {
+	session := s.Copy()
+	defer session.Close()
+	c := session.DB("test").C("songs")
+	result := []Song{}
+	err := c.Find(nil).Sort("-downloadnumber").All(&result)
+	if err != nil {
+		panic(err)
+		return nil
+	}
+	return result
+}
+
 func runCommand(url string) Video {
 	title, _ := exec.Command("youtube-dl", "--get-title", url).CombinedOutput()
 	downloadURL, _ := exec.Command("youtube-dl", "--get-url", "-f", "bestaudio", url).CombinedOutput()
@@ -55,6 +68,14 @@ func GetVideo(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetRanking(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if result := getFromDatabase(s); result != nil {
+			json.NewEncoder(w).Encode(result)
+		}
+	}
+}
+
 func main() {
 	session, err := mgo.Dial("localhost")
 	if err != nil {
@@ -63,5 +84,6 @@ func main() {
 	defer session.Close()
 	router := mux.NewRouter()
 	router.HandleFunc("/api/converter", GetVideo(session)).Methods("GET")
+	router.HandleFunc("/api/ranking", GetRanking(session)).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
