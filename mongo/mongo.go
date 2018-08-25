@@ -9,9 +9,10 @@ import (
 type Song struct {
 	Title          string
 	DownloadNumber int
+	DownloadUrl    string
 }
 
-func SaveInDatabase(s *mgo.Session, songName string) {
+func SaveInDatabase(s *mgo.Session, songName string, url string) {
 	session := s.Copy()
 	defer session.Close()
 	c := session.DB("test").C("songs")
@@ -21,7 +22,7 @@ func SaveInDatabase(s *mgo.Session, songName string) {
 		result.DownloadNumber = result.DownloadNumber + 1
 		err = c.Update(bson.M{"title": songName}, &result)
 	} else {
-		err = c.Insert(&Song{songName, 1})
+		err = c.Insert(&Song{songName, 1, url})
 	}
 	if err != nil {
 		log.Fatal(err)

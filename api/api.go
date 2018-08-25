@@ -24,7 +24,7 @@ func GetVideo(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("url")
 		if param != "" {
 			response := runCommand(param)
-			go mongo.SaveInDatabase(s, response.Title)
+			go mongo.SaveInDatabase(s, response.Title, response.DownloadURL)
 			json.NewEncoder(w).Encode(response)
 		}
 	}
