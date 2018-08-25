@@ -29,7 +29,7 @@ func SaveInDatabase(s *mgo.Session, songName string) {
 	}
 }
 
-func GetFromDatabase(s *mgo.Session) []Song {
+func GetRankingFromDatabase(s *mgo.Session) []Song {
 	session := s.Copy()
 	defer session.Close()
 	c := session.DB("test").C("songs")

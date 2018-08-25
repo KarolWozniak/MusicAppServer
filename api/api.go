@@ -24,7 +24,7 @@ func GetVideo(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("url")
 		if param != "" {
 			response := runCommand(param)
-			mongo.SaveInDatabase(s, response.Title)
+			go mongo.SaveInDatabase(s, response.Title)
 			json.NewEncoder(w).Encode(response)
 		}
 	}
@@ -32,7 +32,7 @@ func GetVideo(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 func GetRanking(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if result := mongo.GetFromDatabase(s); result != nil {
+		if result := mongo.GetRankingFromDatabase(s); result != nil {
 			json.NewEncoder(w).Encode(result)
 		}
 	}
