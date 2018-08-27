@@ -17,5 +17,6 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/converter", api.GetVideo(session)).Methods("GET")
 	router.HandleFunc("/api/ranking", api.GetRanking(session)).Methods("GET")
+	router.HandleFunc("/api/trends", api.GetTrends).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

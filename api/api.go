@@ -37,3 +37,8 @@ func GetRanking(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func GetTrends(w http.ResponseWriter, r *http.Request) {
+	result := GetYtRanking()
+	json.NewEncoder(w).Encode(result)
+}
